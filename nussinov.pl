@@ -1,6 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
 
+# Takes in both a one line argument or reads directly from STDIN or a -f followed by a file to read from
+
 # Straight forward algorithm
 sub NussinovBasic
 {
@@ -84,13 +86,20 @@ sub NussinovBasic
 # Also store changes in score across rows and columns (directional derivatives?)
 # sub NussinovD
 
-# Allow input from STDIN or Filename in arg
+# Allow input from STDIN or Filename (with -f) or Sequence in @ARGV
 my $sequence;
 #  File
 if($ARGV[0])
 {
-    open(FILE, $ARGV[0]) or die $!." \"$ARGV[0]\"";
-    $sequence = <FILE>;
+    if($ARGV[0] eq "-f")
+    {
+        open(FILE, $ARGV[1]) or die $!." \"$ARGV[1]\"";
+        $sequence = <FILE>;
+    }
+    else
+    {
+        $sequence = $ARGV[0];
+    }
 }
 #  STDIN
 else
