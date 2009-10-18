@@ -38,17 +38,15 @@ sub NussinovBasic
                 {
                     $value = $temp;
                 }
-                elsif(($temp = $plot[$i+1][$j]) > $value)
+
+                # This slow (k) step should really be avoided, if possible
+                #  So it is buried past the conditions that allow the other steps
+                #  $plot[$i][$j+2] both checks if that cell is defined AND nonzero
+                if($plot[$i+1][$j] == $plot[$i][$j+1] && ($k = $length - ($i + 2 + $j)) >= 2)
+                #if($plot[$i+1][$j] == $plot[$i][$j+1] && $plot[$i][$j+2])
                 {
-                    $value = $temp;
-                }
-                
-                # This slow step should really be avoided, if possible
-                if(defined($plot[$i][$j+2]) && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
-                #if(($k = $length - ($i + 2 + $j)) >= 2 && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
-                {
-                    #for(; $k > 1; --$k)
-                    for($k = $length - ($i + 2 + $j); $k > 1; --$k)
+                    for(; $k > 1; --$k)
+                    #for($k = $length - ($i + 2 + $j); $k > 1; --$k)
                     {
                         if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j]) > $value)
                         {
@@ -57,6 +55,11 @@ sub NussinovBasic
                         }
                     }
                 }
+                elsif(($temp = $plot[$i+1][$j]) > $value)
+                {
+                    $value = $temp;
+                }
+
             }
 
             $plot[$i][$j] = $value;
@@ -64,18 +67,18 @@ sub NussinovBasic
     }
 
     # Uncomment to print plot out for kicks
-    #my $printBufferSpace = 1;
-    #print "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
-    #for($i = 0; $i <= $length-1; ++$i)
-    #{
-    #    print "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
-    #    for($j = $length-(2+$i); $j >= 0; --$j)
-    #    {
-    #        print (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
-    #        print $plot[$i][$j];
-    #    }
-    #    print "", (" " x $printBufferSpace), "$seq[$i]\n";
-    #}
+    my $printBufferSpace = 1;
+    print "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
+    for($i = 0; $i <= $length-1; ++$i)
+    {
+        print "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
+        for($j = $length-(2+$i); $j >= 0; --$j)
+        {
+            print (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
+            print $plot[$i][$j];
+        }
+        print "", (" " x $printBufferSpace), "$seq[$i]\n";
+    }
 
     print "Score: $plot[0][0]";
 }
