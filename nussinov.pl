@@ -49,13 +49,13 @@ sub NussinovBasic
             $value += ($WCpairing{substr($$seqRef, $i, 1)} eq substr($$seqRef, $length-(1+$j), 1));
             
             # Use k as a temporary variable to make things faster?
-            if(($plot[$i][$j+1]) && ($k = $plot[$i][$j+1]) > $value)
+            if(($plot[$i][$j+1]) && ($plot[$i][$j+1]) > $value)
             {
-                $value = $k;
+                $value = $plot[$i][$j+1];
             }
-            if(($plot[$i+1][$j]) && ($k = $plot[$i+1][$j]) > $value)
+            if(($plot[$i+1][$j]) && ($plot[$i+1][$j]) > $value)
             {
-                $value = $k;
+                $value = $plot[$i+1][$j];
             }
 
             # This slow step should really be avoided, if possible
