@@ -7,8 +7,9 @@ sub NussinovBasic
 {
     # Init method variables
     my $seqRef = pop @_;
-    #my @seq = split("", $$seqRef);
-    my $length = length($$seqRef);
+    #my $length = length($$seqRef);
+    my @seq = split("", $$seqRef);
+    my $length = scalar(@seq);
     
     my %WCpairing = ( "A" => "U", "U" => "A", "G" => "C", "C" => "G" );
     
@@ -35,14 +36,14 @@ sub NussinovBasic
         {
             # Store the diagonal step (delta(i,j) + score(i-1,j-1)) in value / converts undefined to 0 in one step (save a scrap of memory)
             my $value = $plot[$i+1][$j+1];
-            $value += ($WCpairing{substr($$seqRef, $i, 1)} eq substr($$seqRef, $length-(1+$j), 1));
-            #$value += ($WCpairing{$seq[$i]} eq $seq[$length-(1+$j)]);
+            #$value += ($WCpairing{substr($$seqRef, $i, 1)} eq substr($$seqRef, $length-(1+$j), 1));
+            $value += ($WCpairing{$seq[$i]} eq $seq[$length-(1+$j)]);
             
             if(($plot[$i][$j+1]) && ($temp = $plot[$i][$j+1]) > $value)
             {
                 $value = $temp;
             }
-            if(($plot[$i+1][$j]) && ($k = $plot[$i+1][$j]) > $value)
+            if(($plot[$i+1][$j]) && ($temp = $plot[$i+1][$j]) > $value)
             {
                 $value = $temp;
             }
@@ -66,16 +67,17 @@ sub NussinovBasic
     }
     
     # print plot out
-    print split("", $$seqRef)."\n";
-    for($i = 0; $i <= $length-2; ++$i)
+    my $printBufferSpace = 2;
+    print "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
+    for($i = 0; $i <= $length-1; ++$i)
     {
-        print (" "x (3*$i));
+        print "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
         for($j = $length-(2+$i); $j >= 0; --$j)
         {
-            print (" " x (3-length($plot[$i][$j])));
+            print (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
             print $plot[$i][$j];
         }
-        print "\n";
+        print "", (" " x $printBufferSpace), "$seq[$i]\n";
     }
     
     print "Score: $plot[0][0]";
