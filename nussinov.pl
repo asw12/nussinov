@@ -1,8 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
-# use Time::HiRes qw( gettimeofday );               # Time this program
 
-# Nussinov Basic
+# Straight forward algorithm
 sub NussinovBasic
 {
     # Init method variables
@@ -10,9 +9,9 @@ sub NussinovBasic
     #my $length = length($$seqRef);
     my @seq = split("", $$seqRef);
     my $length = scalar(@seq);
-    
+
     my %WCpairing = ( "A" => "U", "U" => "A", "G" => "C", "C" => "G" );
-    
+
     ($length >= 2 or die "Sequence is only one base long!");
 
     my(@plot, $i, $j, $k, $temp);
@@ -20,25 +19,19 @@ sub NussinovBasic
     # Know the size wanted for array; so give the memory manager a hand and allocate it
     $#plot = $length - 1;
 
-    #for(1..$length-1)
-    #{
-    #    my @row = ((0) x ($_));
-    #    #print join(" ",@row)."\n";
-    #    $plot[$_] = \@row;
-    #}
-    
     # Numbering starts at 0,0 in the top right corner, down to $length-2 at the left and bottom ends of the plot
     #  This way avoids negative indexes, because the code doesn't explicitly error check for the end of the arrays
     for($i = $length-2; $i >= 0; --$i)
     {
-        # $length-(2+$i) is the width of the current row
+        # $length-(1+$i) is the width of the current row
+        # $#{$plot[$i]} = $length-(1+$i); # uncomment to set row length (didn't seem to be worth is)
+
         for($j = $length-(2+$i); $j >= 0; --$j)
         {
             # Store the diagonal step (delta(i,j) + score(i-1,j-1)) in value / converts undefined to 0 in one step (save a scrap of memory)
             my $value = $plot[$i+1][$j+1];
-            #$value += ($WCpairing{substr($$seqRef, $i, 1)} eq substr($$seqRef, $length-(1+$j), 1));
             $value += ($WCpairing{$seq[$i]} eq $seq[$length-(1+$j)]);
-            
+
             if(($plot[$i][$j+1]) && ($temp = $plot[$i][$j+1]) > $value)
             {
                 $value = $temp;
@@ -50,40 +43,41 @@ sub NussinovBasic
 
             # This slow step should really be avoided, if possible
             if(($k = $length - ($i + 2 + $j)) >= 2 && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
-            #if(defined($plot[$i+2][$j]) && defined($plot[$i][$j+2]) && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
+            #if(($k = $length - ($i + 2 + $j)) >= 2 && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
             {
                 for(; $k > 1; --$k)
-                #for($k = $length - ($i + 2 + $j); $k > 1; --$k)
                 {
                     if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j]) > $value)
                     {
                         $value = $temp;
+                        last; # It should be proveable that the score will only increase by 1 at most
                     }
                 }
             }
-            
+
             $plot[$i][$j] = $value;
         }
     }
-    
-    # print plot out
-    my $printBufferSpace = 2;
-    print "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
-    for($i = 0; $i <= $length-1; ++$i)
-    {
-        print "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
-        for($j = $length-(2+$i); $j >= 0; --$j)
-        {
-            print (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
-            print $plot[$i][$j];
-        }
-        print "", (" " x $printBufferSpace), "$seq[$i]\n";
-    }
-    
+
+    # Uncomment to print plot out for kicks
+    #my $printBufferSpace = 1;
+    #print "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
+    #for($i = 0; $i <= $length-1; ++$i)
+    #{
+    #    print "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
+    #    for($j = $length-(2+$i); $j >= 0; --$j)
+    #    {
+    #        print (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
+    #        print $plot[$i][$j];
+    #    }
+    #    print "", (" " x $printBufferSpace), "$seq[$i]\n";
+    #}
+
     print "Score: $plot[0][0]";
 }
 
-# my $start = gettimeofday;
+# Also store changes in score across rows and columns (directional derivatives?)
+# sub NussinovD
 
 # Allow input from STDIN or Filename in arg
 my $sequence;
