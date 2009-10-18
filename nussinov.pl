@@ -33,6 +33,7 @@ sub NussinovBasic
     #for(1..$length-1)
     #{
     #    my @row = ((0) x ($_));
+    #    print join(" ",@row)."\n";
     #    $plot[$_] = \@row;
     #}
     
