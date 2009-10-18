@@ -58,7 +58,14 @@ sub NussinovBasic
             }
 
             # This slow step should really be avoided, if possible
-            #if($plot[-100])
+            #if( $j < $length - ($i + 1) && 1)
+            if( $j < $length - ($i + 3) && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
+            {
+                #for($k = 0 )
+                {
+                    
+                }
+            }
             
             $plot[$i][$j] = $value;
             
