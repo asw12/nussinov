@@ -2,30 +2,19 @@
 use strict;
 # use Time::HiRes qw( gettimeofday );               # Time this program
 
-sub GetScore
-{
-    my($plotRef, $i, $j) = @_;
-    return $plotRef->[$i]->[$j];
-}
-
-sub CalcScore
-{
-    my($plotRef, $i, $j) = @_;
-    return 1;
-}
-
 # Nussinov Basic
 sub NussinovBasic
 {
     # Init method variables
     my $seqRef = pop @_;
+    my @seq = split("", $$seqRef);
     my $length = length($$seqRef);
     
     my %WCpairing = ( "A" => "U", "U" => "A", "G" => "C", "C" => "G" );
     
     ($length >= 2 or die "Sequence is only one base long!");
 
-    my(@plot, $i, $j, $k);
+    my(@plot, $i, $j, $k, $temp);
 
     # Know the size wanted for array; so give the memory manager a hand and allocate it
     $#plot = $length - 1;
@@ -33,7 +22,7 @@ sub NussinovBasic
     #for(1..$length-1)
     #{
     #    my @row = ((0) x ($_));
-    #    print join(" ",@row)."\n";
+    #    #print join(" ",@row)."\n";
     #    $plot[$_] = \@row;
     #}
     
@@ -46,30 +35,33 @@ sub NussinovBasic
         {
             # Store the diagonal step (delta(i,j) + score(i-1,j-1)) in value / converts undefined to 0 in one step (save a scrap of memory)
             my $value = $plot[$i+1][$j+1];
-            $value += ($WCpairing{substr($$seqRef, $i, 1)} eq substr($$seqRef, $length-(1+$j), 1));
+            #$value += ($WCpairing{substr($$seqRef, $i, 1)} eq substr($$seqRef, $length-(1+$j), 1));
+            $value += ($WCpairing{$seq[$i]} eq $seq[$length-(1+$j)]);
             
-            # Use k as a temporary variable to make things faster?
-            if(($plot[$i][$j+1]) && ($plot[$i][$j+1]) > $value)
+            if(($plot[$i][$j+1]) && ($temp = $plot[$i][$j+1]) > $value)
             {
-                $value = $plot[$i][$j+1];
+                $value = $temp;
             }
-            if(($plot[$i+1][$j]) && ($plot[$i+1][$j]) > $value)
+            if(($plot[$i+1][$j]) && ($k = $plot[$i+1][$j]) > $value)
             {
-                $value = $plot[$i+1][$j];
+                $value = $temp;
             }
 
             # This slow step should really be avoided, if possible
-            #if( ($k = $length - ($i + 2 + $j)) >= 2 && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
-            #{
-            #    for(; $k > 1; --$k)
-            #    {
-            #        #if ($plot[][];
-            #    }
-            #}
+            if(($k = $length - ($i + 2 + $j)) >= 2 && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
+            #if(defined($plot[$i+2][$j]) && defined($plot[$i][$j+2]) && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
+            {
+                for(; $k > 1; --$k)
+                #for($k = $length - ($i + 2 + $j); $k > 1; --$k)
+                {
+                    if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j]) > $value)
+                    {
+                        $value = $temp;
+                    }
+                }
+            }
             
             $plot[$i][$j] = $value;
-            
-            #print "$i, $j, Value : $value \n";
         }
     }
 
@@ -78,7 +70,7 @@ sub NussinovBasic
 
 # my $start = gettimeofday;
 
-# Allow input from STDIN or File
+# Allow input from STDIN or Filename in arg
 my $sequence;
 #  File
 if($ARGV[0])
@@ -102,13 +94,6 @@ if( $sequence =~ /([^AUGC])/ )
     die "Sequence contains non-ribonucleotide at index ".length($`)."! '$1' \n\t";
 }
 
-if(length($sequence) < 1000)
-{
-    NussinovBasic(\$sequence);
-}
-else
-{
-    NussinovBasic(\$sequence);
-}
+NussinovBasic(\$sequence);
 
 # print "Executed in ", gettimeofday - $start, " seconds. \n";
