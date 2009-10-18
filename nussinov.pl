@@ -42,11 +42,9 @@ sub NussinovBasic
                 # This slow (k) step should really be avoided, if possible
                 #  So it is buried past the conditions that allow the other steps
                 #  $plot[$i][$j+2] both checks if that cell is defined AND nonzero
-                if($plot[$i+1][$j] == $plot[$i][$j+1] && ($k = $length - ($i + 2 + $j)) >= 2)
-                #if($plot[$i+1][$j] == $plot[$i][$j+1] && $plot[$i][$j+2])
+                if($plot[$i+1][$j] == $plot[$i][$j+1])
                 {
-                    for(; $k > 1; --$k)
-                    #for($k = $length - ($i + 2 + $j); $k > 1; --$k)
+                    for($k = $length - ($i + 2 + $j); $k > 1; --$k)
                     {
                         if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j]) > $value)
                         {
