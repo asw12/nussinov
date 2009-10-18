@@ -7,7 +7,7 @@ sub NussinovBasic
 {
     # Init method variables
     my $seqRef = pop @_;
-    my @seq = split("", $$seqRef);
+    #my @seq = split("", $$seqRef);
     my $length = length($$seqRef);
     
     my %WCpairing = ( "A" => "U", "U" => "A", "G" => "C", "C" => "G" );
@@ -35,8 +35,8 @@ sub NussinovBasic
         {
             # Store the diagonal step (delta(i,j) + score(i-1,j-1)) in value / converts undefined to 0 in one step (save a scrap of memory)
             my $value = $plot[$i+1][$j+1];
-            #$value += ($WCpairing{substr($$seqRef, $i, 1)} eq substr($$seqRef, $length-(1+$j), 1));
-            $value += ($WCpairing{$seq[$i]} eq $seq[$length-(1+$j)]);
+            $value += ($WCpairing{substr($$seqRef, $i, 1)} eq substr($$seqRef, $length-(1+$j), 1));
+            #$value += ($WCpairing{$seq[$i]} eq $seq[$length-(1+$j)]);
             
             if(($plot[$i][$j+1]) && ($temp = $plot[$i][$j+1]) > $value)
             {
@@ -64,7 +64,20 @@ sub NussinovBasic
             $plot[$i][$j] = $value;
         }
     }
-
+    
+    # print plot out
+    print split("", $$seqRef)."\n";
+    for($i = 0; $i <= $length-2; ++$i)
+    {
+        print (" "x (3*$i));
+        for($j = $length-(2+$i); $j >= 0; --$j)
+        {
+            print (" " x (3-length($plot[$i][$j])));
+            print $plot[$i][$j];
+        }
+        print "\n";
+    }
+    
     print "Score: $plot[0][0]";
 }
 
