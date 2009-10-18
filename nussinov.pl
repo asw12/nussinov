@@ -32,25 +32,29 @@ sub NussinovBasic
             my $value = $plot[$i+1][$j+1];
             $value += ($WCpairing{$seq[$i]} eq $seq[$length-(1+$j)]);
 
-            if(($plot[$i][$j+1]) && ($temp = $plot[$i][$j+1]) > $value)
+            if(defined($plot[$i][$j+1]))
             {
-                $value = $temp;
-            }
-            if(($plot[$i+1][$j]) && ($temp = $plot[$i+1][$j]) > $value)
-            {
-                $value = $temp;
-            }
-
-            # This slow step should really be avoided, if possible
-            if(($k = $length - ($i + 2 + $j)) >= 2 && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
-            #if(($k = $length - ($i + 2 + $j)) >= 2 && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
-            {
-                for(; $k > 1; --$k)
+                if(($temp = $plot[$i][$j+1]) > $value)
                 {
-                    if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j]) > $value)
+                    $value = $temp;
+                }
+                elsif(($temp = $plot[$i+1][$j]) > $value)
+                {
+                    $value = $temp;
+                }
+                
+                # This slow step should really be avoided, if possible
+                if(defined($plot[$i][$j+2]) && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
+                #if(($k = $length - ($i + 2 + $j)) >= 2 && $plot[$i+2][$j] + $plot[$i][$j+2] > $value)
+                {
+                    #for(; $k > 1; --$k)
+                    for($k = $length - ($i + 2 + $j); $k > 1; --$k)
                     {
-                        $value = $temp;
-                        last; # It should be proveable that the score will only increase by 1 at most
+                        if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j]) > $value)
+                        {
+                            $value = $temp;
+                            last; # It should be proveable that the score will only increase by 1 at most
+                        }
                     }
                 }
             }
