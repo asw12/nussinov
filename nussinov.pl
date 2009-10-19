@@ -1,9 +1,16 @@
 #!/usr/bin/perl -w
+
+# BioE131 HW 5: Nussinov algortithm
+# Input:
+#   Takes in both a one line RNA argument, reads directly from STDIN, or a -f followed by a file to read from.
+# Output:
+#   Standard output is just the lowest score that the algorithm finds.
+#   Included are some commented out lines which print out the complete plot of the Nussinov algorithm and the time that the program took to run.
+#   These lines make the program *slightly* slower, so I commented them out in the spirit of competitiveness :).
+
 use strict;
 use Time::HiRes qw( gettimeofday );               # Time this program
 my $startTime = gettimeofday;
-
-# Takes in both a one line argument or reads directly from STDIN or a -f followed by a file to read from
 
 # Straight forward algorithm
 sub NussinovBasic
@@ -24,7 +31,7 @@ sub NussinovBasic
     $#plot = $length - 1;
 
     # Numbering starts at 0,0 in the top right corner, down to $length-2 at the left and bottom ends of the plot
-    #  This way avoids negative indexes, because the code doesn't explicitly error check for the end of the arrays
+    #  This way avoids negative indexes (for good principles), because the code doesn't explicitly error check for the end of the arrays.
     for($i = $length-2; $i >= 0; --$i)
     {
         # $length-(1+$i) is the width of the current row
@@ -48,17 +55,12 @@ sub NussinovBasic
                 #  $plot[$i][$j+2] both checks if that cell is defined AND nonzero
                 if($plot[$i+1][$j] == $plot[$i][$j+1])
                 {
-                    for($k = $length - ($i + 2 + $j); $k > 1; --$k)
+                    for($k = $length - ($i + 2 + $j); $k > 1; $k -= $temp + 1)
                     {
                         if(($temp = $value - ($plot[$i][$j+$k] + $plot[($length - $j) - $k][$j])) < 0)
                         {
                             $value++;
-                            last; # It should be proveable that the score will only increase by 1 at most
-                        }
-                        elsif($temp > 1)
-                        {
-                            # Exploit the property that each increase in k only changes the score of this step by at most +2
-                            $k -= ($temp) >> 1;
+                            last; # Again, it is proveable that the score will only increase by 1 at most. If we find a k step that is one more than the adjacent cells, increment $value and stop.
                         }
                     }
                 }
@@ -74,20 +76,20 @@ sub NussinovBasic
     }
 
     # Uncomment to print plot out for kicks
-    #my $printBufferSpace = 1;
-    #print "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
-    #for($i = 0; $i <= $length-1; ++$i)
-    #{
-    #    print "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
-    #    for($j = $length-(2+$i); $j >= 0; --$j)
-    #    {
-    #        print (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
-    #        print $plot[$i][$j];
-    #    }
-    #    print "", (" " x $printBufferSpace), "$seq[$i]\n";
-    #}
+    my $printBufferSpace = 2;
+    print STDERR "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
+    for($i = 0; $i <= $length-1; ++$i)
+    {
+        print STDERR "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
+        for($j = $length-(2+$i); $j >= 0; --$j)
+        {
+            print STDERR (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
+            print STDERR $plot[$i][$j];
+        }
+        print STDERR "", (" " x $printBufferSpace), "$seq[$i]\n";
+    }
 
-    print STDERR "Score: $plot[0][0] ";
+    print "Score: $plot[0][0] ";
 }
 
 # Allow input from STDIN or Filename (with -f) or Sequence in @ARGV
