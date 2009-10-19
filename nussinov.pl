@@ -1,5 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
+use Time::HiRes qw( gettimeofday );               # Time this program
+my $startTime = gettimeofday;
 
 # Takes in both a one line argument or reads directly from STDIN or a -f followed by a file to read from
 
@@ -50,7 +52,8 @@ sub NussinovBasic
                     {
                         if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j]) > $value)
                         {
-                            $value = $temp;
+                            # TODO: try using $temp to store the differences, and use skipping..
+                            $value++;
                             last; # It should be proveable that the score will only increase by 1 at most
                         }
                     }
@@ -80,11 +83,8 @@ sub NussinovBasic
         print "", (" " x $printBufferSpace), "$seq[$i]\n";
     }
 
-    print "Score: $plot[0][0]";
+    print "Score: $plot[0][0]\n";
 }
-
-# Also store changes in score across rows and columns (directional derivatives?)
-# sub NussinovD
 
 # Allow input from STDIN or Filename (with -f) or Sequence in @ARGV
 my $sequence;
@@ -119,4 +119,4 @@ if( $sequence =~ /([^AUGC])/ )
 
 NussinovBasic(\$sequence);
 
-# print "Executed in ", gettimeofday - $start, " seconds. \n";
+print STDERR "Executed in ", gettimeofday - $startTime, "\n";
