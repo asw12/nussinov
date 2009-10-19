@@ -50,11 +50,15 @@ sub NussinovBasic
                 {
                     for($k = $length - ($i + 2 + $j); $k > 1; --$k)
                     {
-                        if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j]) > $value)
+                        if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j] - $value) > 0)
                         {
                             # TODO: try using $temp to store the differences, and use skipping..
                             $value++;
                             last; # It should be proveable that the score will only increase by 1 at most
+                        }
+                        elsif($temp < -1)
+                        {
+                            --$k;
                         }
                     }
                 }
