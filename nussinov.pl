@@ -45,9 +45,9 @@ sub NussinovBasic
 
             if($plot[$i][$j+1] || $plot[$i+1][$j])
             {
-                if(($temp = $plot[$i][$j+1]) > $value)
+                if($plot[$i][$j+1] > $value)
                 {
-                    $value = $temp;
+                    ++$value;
                 }
 
                 # This slow (k) step should really be avoided, if possible
@@ -55,18 +55,21 @@ sub NussinovBasic
                 #  $plot[$i][$j+2] both checks if that cell is defined AND nonzero
                 if($plot[$i+1][$j] == $plot[$i][$j+1])
                 {
-                    for($k = $length - ($i + 2 + $j); $k > 1; $k -= $temp + 1)
-                    {
-                        if(($temp = $value - ($plot[$i][$j+$k] + $plot[($length - $j) - $k][$j])) < 0)
+                    #if()
+                    #{
+                        for($k = $length - ($i + 2 + $j); $k > 1; $k -= $temp + 1)
                         {
-                            $value++;
-                            last; # Again, it is proveable that the score will only increase by 1 at most. If we find a k step that is one more than the adjacent cells, increment $value and stop.
+                            if(($temp = $value - ($plot[$i][$j+$k] + $plot[($length - $j) - $k][$j])) < 0)
+                            {
+                                ++$value;
+                                last; # Again, it is proveable that the score will only increase by 1 at most. If we find a k step that is one more than the adjacent cells, increment $value and stop.
+                            }
                         }
-                    }
+                    #}
                 }
-                elsif(($temp = $plot[$i+1][$j]) > $value)
+                elsif($plot[$i+1][$j] > $value)
                 {
-                    $value = $temp;
+                    ++$value;
                 }
 
             }
@@ -76,20 +79,20 @@ sub NussinovBasic
     }
 
     # Uncomment to print plot out for kicks
-    my $printBufferSpace = 2;
-    print STDERR "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
-    for($i = 0; $i <= $length-1; ++$i)
-    {
-        print STDERR "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
-        for($j = $length-(2+$i); $j >= 0; --$j)
-        {
-            print STDERR (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
-            print STDERR $plot[$i][$j];
-        }
-        print STDERR "", (" " x $printBufferSpace), "$seq[$i]\n";
-    }
+    #my $printBufferSpace = 2;
+    #print STDERR "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
+    #for($i = 0; $i <= $length-1; ++$i)
+    #{
+    #    print STDERR "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
+    #    for($j = $length-(2+$i); $j >= 0; --$j)
+    #    {
+    #        print STDERR (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
+    #        print STDERR $plot[$i][$j];
+    #    }
+    #    print STDERR "", (" " x $printBufferSpace), "$seq[$i]\n";
+    #}
 
-    print "Score: $plot[0][0] ";
+    print STDERR "Score: $plot[0][0] ";
 }
 
 # Allow input from STDIN or Filename (with -f) or Sequence in @ARGV
