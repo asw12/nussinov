@@ -50,14 +50,15 @@ sub NussinovBasic
                 {
                     for($k = $length - ($i + 2 + $j); $k > 1; --$k)
                     {
-                        if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j] - $value) > 0)
+                        if(($temp = $value - ($plot[$i][$j+$k] + $plot[($length - $j) - $k][$j])) < 0)
                         {
                             $value++;
                             last; # It should be proveable that the score will only increase by 1 at most
                         }
-                        elsif($temp < -1)
+                        elsif($temp > 1)
                         {
-                            --$k;
+                            # Exploit the property that each increase in k only changes the score of this step by at most +2
+                            $k -= ($temp) >> 1;
                         }
                     }
                 }
@@ -73,18 +74,18 @@ sub NussinovBasic
     }
 
     # Uncomment to print plot out for kicks
-    my $printBufferSpace = 1;
-    print "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
-    for($i = 0; $i <= $length-1; ++$i)
-    {
-        print "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
-        for($j = $length-(2+$i); $j >= 0; --$j)
-        {
-            print (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
-            print $plot[$i][$j];
-        }
-        print "", (" " x $printBufferSpace), "$seq[$i]\n";
-    }
+    #my $printBufferSpace = 1;
+    #print "", (" " x $printBufferSpace), join((" " x $printBufferSpace),@seq), "\n";
+    #for($i = 0; $i <= $length-1; ++$i)
+    #{
+    #    print "", (" " x $printBufferSpace), (" " x (($printBufferSpace+1)*($i))), "0";
+    #    for($j = $length-(2+$i); $j >= 0; --$j)
+    #    {
+    #        print (" " x (($printBufferSpace+1)-length($plot[$i][$j])));
+    #        print $plot[$i][$j];
+    #    }
+    #    print "", (" " x $printBufferSpace), "$seq[$i]\n";
+    #}
 
     print STDERR "Score: $plot[0][0] ";
 }
