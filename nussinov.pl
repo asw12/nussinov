@@ -34,9 +34,9 @@ sub NussinovBasic
         {
             # Store the diagonal step (delta(i,j) + score(i-1,j-1)) in value / converts undefined to 0 in one step (save a scrap of memory)
             my $value = $plot[$i+1][$j+1];
-            $value += ($WCpairing{$seq[$i]} eq $seq[$length-(1+$j)]);
+            $value += $WCpairing{$seq[$i]} eq $seq[$length-(1+$j)];
 
-            if(defined($plot[$i][$j+1]))
+            if($plot[$i][$j+1] || $plot[$i+1][$j])
             {
                 if(($temp = $plot[$i][$j+1]) > $value)
                 {
@@ -52,7 +52,6 @@ sub NussinovBasic
                     {
                         if(($temp = $plot[$i][$j+$k] + $plot[($length - $j) - $k][$j] - $value) > 0)
                         {
-                            # TODO: try using $temp to store the differences, and use skipping..
                             $value++;
                             last; # It should be proveable that the score will only increase by 1 at most
                         }
@@ -87,7 +86,7 @@ sub NussinovBasic
         print "", (" " x $printBufferSpace), "$seq[$i]\n";
     }
 
-    print "Score: $plot[0][0]\n";
+    print STDERR "Score: $plot[0][0] ";
 }
 
 # Allow input from STDIN or Filename (with -f) or Sequence in @ARGV
@@ -123,4 +122,4 @@ if( $sequence =~ /([^AUGC])/ )
 
 NussinovBasic(\$sequence);
 
-print STDERR "Executed in ", gettimeofday - $startTime, "\n";
+print STDERR " Executed in ", gettimeofday - $startTime, "\n";
