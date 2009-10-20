@@ -53,19 +53,16 @@ sub NussinovBasic
                 # This slow (k) step should really be avoided, if possible
                 #  So it is buried past the conditions that allow the other steps
                 #  $plot[$i][$j+2] both checks if that cell is defined AND nonzero
-                if($plot[$i+1][$j] == $plot[$i][$j+1])
+                if($plot[$i+1][$j] == $plot[$i][$j+1] && $plot[$i+1][$j] == $value)
                 {
-                    #if()
-                    #{
-                        for($k = $length - ($i + 2 + $j); $k > 1; $k -= $temp + 1)
+                    for($k = $length - ($i + 2 + $j); $k > 1; $k -= $temp + 1)
+                    {
+                        if(($temp = $value - ($plot[$i][$j+$k] + $plot[($length - $j) - $k][$j])) < 0)
                         {
-                            if(($temp = $value - ($plot[$i][$j+$k] + $plot[($length - $j) - $k][$j])) < 0)
-                            {
-                                ++$value;
-                                last; # Again, it is proveable that the score will only increase by 1 at most. If we find a k step that is one more than the adjacent cells, increment $value and stop.
-                            }
+                            ++$value;
+                            last; # Again, it is proveable that the score will only increase by 1 at most. If we find a k step that is one more than the adjacent cells, increment $value and stop.
                         }
-                    #}
+                    }
                 }
                 elsif($plot[$i+1][$j] > $value)
                 {
@@ -92,7 +89,7 @@ sub NussinovBasic
     #    print STDERR "", (" " x $printBufferSpace), "$seq[$i]\n";
     #}
 
-    print STDERR "Score: $plot[0][0] ";
+    print "Score: $plot[0][0] ";
 }
 
 # Allow input from STDIN or Filename (with -f) or Sequence in @ARGV
