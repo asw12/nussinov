@@ -8,9 +8,9 @@
 #   Included are some commented out lines which print out the complete plot of the Nussinov algorithm and the time that the program took to run.
 #   These lines make the program *slightly* slower, so I commented them out in the spirit of competitiveness :).
 
-use strict;
-use Time::HiRes qw( gettimeofday );               # Time this program
-my $startTime = gettimeofday;
+#use strict;
+#use Time::HiRes qw( gettimeofday );               # Time this program
+#my $startTime = gettimeofday;
 
 # Straight forward algorithm
 sub NussinovBasic
@@ -125,4 +125,4 @@ if( $sequence =~ /([^AUGC])/ )
 
 NussinovBasic(\$sequence);
 
-print STDERR " Executed in ", gettimeofday - $startTime, "\n";
+#print STDERR " Executed in ", gettimeofday - $startTime, "\n";
